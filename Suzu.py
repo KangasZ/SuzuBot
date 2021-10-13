@@ -18,6 +18,6 @@ class Suzu(discord.Client):
         if message.author.id == self.user.id:
             return
         if message.content.startswith(self._prefix):
-            await message.channel.send(message.content[::1])
+            await message.channel.send(message.content[1::])
 
 suzu = Suzu()
