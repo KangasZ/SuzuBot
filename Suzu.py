@@ -19,6 +19,7 @@ class Suzu(commands.AutoShardedBot):
 
         self.add_command(test)'''
         self.load_extension("commands.test")
+        self.load_extension("commands.c9")
 
         super().run(self._token, reconnect=True, bot=True)
 
