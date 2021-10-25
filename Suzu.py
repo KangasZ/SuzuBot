@@ -19,12 +19,12 @@ class Suzu(commands.AutoShardedBot):
 
         self.add_command(test)'''
         self.load_extension("commands.test")
-        self.load_extension("commands.c9")
+        self.load_extension("commands.C9")
 
         super().run(self._token, reconnect=True, bot=True)
 
     async def on_ready(self):
-        print("hi")
+        print("Bot Initialized.")
 
 
 
