@@ -12,7 +12,7 @@ class Suzu(commands.AutoShardedBot):
         self._token = self._config.get_val('token')
         self._prefix = self._config.get_val('prefix')
         super().__init__(command_prefix='%')
-
+        self.owner_id = self._config.get_val('owner')
         '''@command(name='test')
         async def test(ctx, arg):
             ctx.send("wow this test worked peepowut")
