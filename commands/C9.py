@@ -15,6 +15,8 @@ class C9(commands.Cog, name='Hopium'):
                 await ctx.channel.send("ERROR: C9 WIN NOT FOUND")
             if arg[0].lower() == "worlds":
                 await ctx.channel.send("SELL YOUR BOTLANE\nPERKZ WAS A WASTE\nRETHINK YOUR LIVES\nCANT EVEN GET OUT OF SEMIS\nGO BACK TO ACADEMY\nFIRST CLASS SEATS BACK TO NA")
+            if arg[0].lower() == "clown":
+                await ctx.channel.send("Clown9 Strikes Again")
         else:
             await ctx.channel.send("C9 HOPIUM")
 
