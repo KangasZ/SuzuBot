@@ -7,7 +7,8 @@
 ```json
 {
   "token" : "yourtokenhere",
-  "prefix" : "yourprefixhere"
+  "prefix" : "yourprefixhere",
+  "owner" : 99999999999
 }
 ```
 ..

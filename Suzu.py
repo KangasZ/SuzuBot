@@ -11,7 +11,7 @@ class Suzu(commands.AutoShardedBot):
         intents = discord.Intents.default()
         self._token = self._config.get_val('token')
         self._prefix = self._config.get_val('prefix')
-        super().__init__(command_prefix='%')
+        super().__init__(command_prefix=self._prefix)
         self.owner_id = self._config.get_val('owner')
         '''@command(name='test')
         async def test(ctx, arg):
