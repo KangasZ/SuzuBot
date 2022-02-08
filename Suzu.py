@@ -8,10 +8,10 @@ import discord
 class Suzu(commands.AutoShardedBot):
     def __init__(self):
         self._config = Config()
-        intents = discord.Intents.default()
+        intents = discord.Intents.all()
         self._token = self._config.get_val('token')
         self._prefix = self._config.get_val('prefix')
-        super().__init__(command_prefix=self._prefix)
+        super().__init__(command_prefix=self._prefix, intents=intents)
         self.owner_id = self._config.get_val('owner')
         '''@command(name='test')
         async def test(ctx, arg):
@@ -20,18 +20,12 @@ class Suzu(commands.AutoShardedBot):
         self.add_command(test)'''
         self.load_extension("commands.test")
         self.load_extension("commands.C9")
+        self.load_extension("handlers.rules")
 
         super().run(self._token, reconnect=True, bot=True)
 
     async def on_ready(self):
         print("Bot Initialized.")
 
-
-
-    '''async def on_message(self, message):
-        if message.author.id == self.user.id:
-            return
-        if message.content.startswith(self._prefix):
-            await message.channel.send(message.content[1::])'''
 
 suzu = Suzu()
