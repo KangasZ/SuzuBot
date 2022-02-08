@@ -16,21 +16,21 @@ class Rules(commands.Cog, name='Handlers'):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        channel = self.bot.get_channel(payload.channel_id)
-        message = await channel.fetch_message(payload.message_id)
-        guild = self.bot.get_guild(payload.guild_id)
-        # Put the following Line
-        member = guild.get_member(payload.user_id)
-        reaction = discord.utils.get(message.reactions, emoji=payload.emoji.name)
-
         # only work if it is the client
         if payload.user_id == self.bot.user.id:
             return
 
-        if payload.message_id == 940633019843231775 and reaction.emoji == '✅':
-            roles = discord.utils.get(guild.roles, name='Yerr')
-            await member.add_roles(roles)
-            await reaction.remove(payload.member)
+        if payload.message_id == 940633019843231775:
+            channel = self.bot.get_channel(payload.channel_id)
+            message = await channel.fetch_message(payload.message_id)
+            reaction = discord.utils.get(message.reactions, emoji=payload.emoji.name)
+
+            if reaction.emoji == '✅':
+                guild = self.bot.get_guild(payload.guild_id)
+                member = guild.get_member(payload.user_id)
+                roles = discord.utils.get(guild.roles, name='Yerr')
+                await member.add_roles(roles)
+                await reaction.remove(payload.member)
 
     @commands.is_owner()
     @commands.command(name='rules', aliases=['Rules', 'RULES'])
