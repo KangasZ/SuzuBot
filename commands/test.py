@@ -2,7 +2,7 @@ from discord.ext import commands
 
 
 class Test(commands.Cog, name='test suite'):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.AutoShardedBot):
         self.bot = bot
 
     @commands.is_owner()

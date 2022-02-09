@@ -2,11 +2,11 @@ from discord.ext import commands
 
 
 class C9(commands.Cog, name='Hopium'):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.AutoShardedBot):
         self.bot = bot
 
     @commands.command(name='C9', aliases=['c9'])
-    async def test(self, ctx, *arg):
+    async def test(self, ctx: commands.Context, *arg):
         #await ctx.message.delete()
         if len(arg) != 0:
             if arg[0].lower() == "perkz":
