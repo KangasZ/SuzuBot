@@ -1,6 +1,7 @@
 from discord.ext import commands
 import discord
 import toml
+from commands.utils import checks
 import typing
 
 class Rules(commands.Cog, name='Handlers'):
@@ -53,7 +54,8 @@ class Rules(commands.Cog, name='Handlers'):
                     await member.remove_roles(roles)
 
     @commands.is_owner()
-    @commands.command(name='rules', aliases=['Rules', 'RULES'])
+    @checks.is_mod()
+    @commands.command(name='rules', aliases=['Rules', 'RULES'], hidden=True)
     async def rules(self, ctx: discord.ext.commands.Context, *arg):
         await ctx.channel.send("owner only ovo")
         if len(arg) == 3:
@@ -63,7 +65,17 @@ class Rules(commands.Cog, name='Handlers'):
             emoji = arg[2]
             guild: discord.Guild = ctx.guild
             channel: discord.TextChannel = discord.utils.get(guild.text_channels, id=channel_id)
-            message: discord.Message = await channel.send("RULES go here")
+            embed = discord.Embed(title="Tranquility Rules",
+                                  type="rich",
+                                  color=0xa300a3)
+            # embed.set_author(name="Gurus")
+            embed.add_field(name="1", value="No silly drama", inline=False)
+            embed.add_field(name="2", value="Be nice", inline=False)
+            embed.add_field(name="3", value="Have fun", inline=False)
+            embed.add_field(name="Questions, issues, concerns?",
+                            value=f"Message <@{self.bot.owner_id}> or <@111668761810964480>", inline=False)
+            embed.set_footer(text="React below to access the server")
+            message: discord.Message = await channel.send(embed=embed)
             await message.add_reaction(emoji=emoji)
             self.rules_dict[str(message.guild.id)] = {
                 "channel": message.channel.id,

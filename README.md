@@ -11,4 +11,7 @@
   "owner" : 99999999999
 }
 ```
+
+venv/bin/activate
+
 ..

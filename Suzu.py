@@ -23,7 +23,7 @@ class Suzu(commands.AutoShardedBot):
 
 
 if __name__ == "__main__":
-    print(sys.argv)
+    #print(sys.argv)
     dev = False
     if len(sys.argv) > 1:
         if sys.argv[1].lower() == "dev":
