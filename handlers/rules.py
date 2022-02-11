@@ -24,9 +24,9 @@ class Rules(commands.Cog, name='Handlers'):
         gid = str(payload.guild_id)
         if gid in self.rules_dict:
             guild_dict = self.rules_dict[gid]
-            if payload.channel_id not in guild_dict["listeners"]:
+            if str(payload.channel_id) not in guild_dict["listeners"]:
                 return
-            if payload.message_id not in guild_dict["listeners"][str(payload.channel_id)]:
+            if str(payload.message_id) not in guild_dict["listeners"][str(payload.channel_id)]:
                 return
             guild_dict = self.rules_dict[gid]
             channel = self.bot.get_channel(payload.channel_id)
@@ -46,9 +46,9 @@ class Rules(commands.Cog, name='Handlers'):
         gid = str(payload.guild_id)
         if gid in self.rules_dict:
             guild_dict = self.rules_dict[gid]
-            if payload.channel_id not in guild_dict["listeners"]:
+            if str(payload.channel_id) not in guild_dict["listeners"]:
                 return
-            if payload.message_id not in guild_dict["listeners"][str(payload.channel_id)]:
+            if str(payload.message_id) not in guild_dict["listeners"][str(payload.channel_id)]:
                 return
             guild_dict = self.rules_dict[gid]
             channel = self.bot.get_channel(payload.channel_id)
@@ -92,7 +92,7 @@ class Rules(commands.Cog, name='Handlers'):
                     guild_dict["listeners"] = {}
                     for k in guild_dict["rules"]:
                         if "react" in guild_dict["rules"][k]:
-                            guild_dict["listeners"][str(guild_dict["rules"][k]["cid"])] = guild_dict["rules"][k]["mid"]
+                            guild_dict["listeners"][str(guild_dict["rules"][k]["cid"])] = str(guild_dict["rules"][k]["mid"])
                     for k in rule_dict["react"]:
                         await message.add_reaction(emoji=k)
                 await ctx.message.delete()
