@@ -18,15 +18,6 @@ class Rules(commands.Cog, name='Handlers'):
                 toml.dump(self.rules_dict, json_file)
 
     @commands.Cog.listener()
-    async def on_ready(self):
-        #for key in self.rules_dict:
-        #    guild_dict = self.rules_dict[key]
-        #    channel = self.bot.get_channel(guild_dict["channel"])
-        #    message = await channel.fetch_message(guild_dict["message"])
-        #    await message.add_reaction(emoji=guild_dict["emoji"])
-        pass
-
-    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
         if payload.user_id == self.bot.user.id:
             return
@@ -98,7 +89,10 @@ class Rules(commands.Cog, name='Handlers'):
                 rule_dict["cid"] = message.channel.id
                 rule_dict["mid"] = message.id
                 if "react" in rule_dict:
-                    guild_dict["listeners"][str(rule_dict["cid"])] = str(message.id)
+                    guild_dict["listeners"] = {}
+                    for k in guild_dict["rules"]:
+                        if "react" in guild_dict["rules"][k]:
+                            guild_dict["listeners"][str(guild_dict["rules"][k]["cid"])] = guild_dict["rules"][k]["mid"]
                     for k in rule_dict["react"]:
                         await message.add_reaction(emoji=k)
                 await ctx.message.delete()
