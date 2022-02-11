@@ -26,7 +26,7 @@ class Rules(commands.Cog, name='Handlers'):
             guild_dict = self.rules_dict[gid]
             if str(payload.channel_id) not in guild_dict["listeners"]:
                 return
-            if str(payload.message_id) == guild_dict["listeners"][str(payload.channel_id)]:
+            if str(payload.message_id) == str(guild_dict["listeners"][str(payload.channel_id)]):
                 return
             guild_dict = self.rules_dict[gid]
             channel = self.bot.get_channel(payload.channel_id)
@@ -48,7 +48,7 @@ class Rules(commands.Cog, name='Handlers'):
             guild_dict = self.rules_dict[gid]
             if str(payload.channel_id) not in guild_dict["listeners"]:
                 return
-            if str(payload.message_id) == guild_dict["listeners"][str(payload.channel_id)]:
+            if str(payload.message_id) != str(guild_dict["listeners"][str(payload.channel_id)]):
                 return
             guild_dict = self.rules_dict[gid]
             channel = self.bot.get_channel(payload.channel_id)
