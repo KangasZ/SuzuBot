@@ -3,20 +3,28 @@ import discord
 import toml
 from commands.utils import checks
 import typing
+import re
 
 class Rules(commands.Cog, name='Handlers'):
     def __init__(self, bot: commands.AutoShardedBot):
         self.bot = bot
-        with open("rules.toml", 'r', encoding="utf-8") as json_file:
-            self.rules_dict = toml.load(json_file)
+        # todo role listener
+        try:
+            with open("rules.toml", 'r', encoding="utf-8") as json_file:
+                self.rules_dict = toml.load(json_file)
+        except:
+            with open("rules.toml", 'w', encoding="utf-8") as json_file:
+                self.rules_dict = {"version": 1}
+                toml.dump(self.rules_dict, json_file)
 
     @commands.Cog.listener()
     async def on_ready(self):
-        for key in self.rules_dict:
-            guild_dict = self.rules_dict[key]
-            channel = self.bot.get_channel(guild_dict["channel"])
-            message = await channel.fetch_message(guild_dict["message"])
-            await message.add_reaction(emoji=guild_dict["emoji"])
+        #for key in self.rules_dict:
+        #    guild_dict = self.rules_dict[key]
+        #    channel = self.bot.get_channel(guild_dict["channel"])
+        #    message = await channel.fetch_message(guild_dict["message"])
+        #    await message.add_reaction(emoji=guild_dict["emoji"])
+        pass
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
@@ -24,7 +32,10 @@ class Rules(commands.Cog, name='Handlers'):
             return
         gid = str(payload.guild_id)
         if gid in self.rules_dict:
-            if payload.message_id == self.rules_dict[gid]["message"]:
+            guild_dict = self.rules_dict[gid]
+            if "role" not in guild_dict:
+                return
+            if payload.message_id == guild_dict["message"]:
                 guild_dict = self.rules_dict[gid]
                 channel = self.bot.get_channel(payload.channel_id)
                 message = await channel.fetch_message(payload.message_id)
@@ -41,8 +52,10 @@ class Rules(commands.Cog, name='Handlers'):
             return
         gid = str(payload.guild_id)
         if gid in self.rules_dict:
-            if payload.message_id == self.rules_dict[gid]["message"]:
-                guild_dict = self.rules_dict[gid]
+            guild_dict = self.rules_dict[gid]
+            if "role" not in guild_dict:
+                return
+            if payload.message_id == guild_dict["message"]:
                 channel = self.bot.get_channel(payload.channel_id)
                 message = await channel.fetch_message(payload.message_id)
                 reaction = discord.utils.get(message.reactions, emoji=payload.emoji.name)
@@ -54,38 +67,64 @@ class Rules(commands.Cog, name='Handlers'):
                     await member.remove_roles(roles)
 
     @commands.is_owner()
-    @checks.is_mod()
     @commands.command(name='rules', aliases=['Rules', 'RULES'], hidden=True)
     async def rules(self, ctx: discord.ext.commands.Context, *arg):
         await ctx.channel.send("owner only ovo")
-        if len(arg) == 3:
-            await ctx.channel.send(f"Sending Rules to ID {arg[0]}")
-            channel_id = int(arg[0])
-            role_id = int(arg[1])
-            emoji = arg[2]
+        guild_dict: dict
+        if str(ctx.guild.id) not in self.rules_dict:
+            self.rules_dict[str(ctx.guild.id)] = {}
+        guild_dict = self.rules_dict[str(ctx.guild.id)]
+        if arg[0] == "post":
+            name: str = arg[1]
             guild: discord.Guild = ctx.guild
-            channel: discord.TextChannel = discord.utils.get(guild.text_channels, id=channel_id)
-            embed = discord.Embed(title="Tranquility Rules",
-                                  type="rich",
-                                  color=0xa300a3)
-            # embed.set_author(name="Gurus")
-            embed.add_field(name="1", value="No silly drama", inline=False)
-            embed.add_field(name="2", value="Be nice", inline=False)
-            embed.add_field(name="3", value="Have fun", inline=False)
-            embed.add_field(name="Questions, issues, concerns?",
-                            value=f"Message <@{self.bot.owner_id}> or <@111668761810964480>", inline=False)
-            embed.set_footer(text="React below to access the server")
+            channel: discord.TextChannel = ctx.channel
+            embed = discord.Embed.from_dict(guild_dict[name]["embed"])
             message: discord.Message = await channel.send(embed=embed)
-            await message.add_reaction(emoji=emoji)
-            self.rules_dict[str(message.guild.id)] = {
-                "channel": message.channel.id,
-                "message": message.id,
-                "emoji": emoji,
-                "role": role_id
+            # TODO manage reactions
+            guild_dict[name]["cid"] = message.channel.id
+            guild_dict[name]["mid"] = message.id
+            await ctx.message.delete()
+        elif arg[0] == "create":
+            name: str = arg[1]
+            title: str = arg[2]
+            color = int(arg[3])
+            guild_dict[name] = {
+                "embed": {"title": title, "color": color, "type": "rich", "fields": []}
             }
-            with open("rules.toml", 'w', encoding="utf-8") as json_file:
-                toml.dump(self.rules_dict, json_file)
-
+            await ctx.channel.send(f"Now, type %rules field/footer {name} [args]")
+        elif arg[0] == "field":
+            name = arg[1]
+            fields: list = guild_dict[name]["embed"]["fields"]
+            fields.append({"inline": False, "name": arg[2], "value": arg[3]})
+        elif arg[0] == "clear":
+            name = arg[1]
+            guild_dict[name]["embed"]["fields"] = []
+            guild_dict[name]["embed"].pop("footer", None)
+        elif arg[0] == "footer":
+            name = arg[1]
+            guild_dict[name]["embed"]["footer"] = {"text": arg[2]}
+        elif arg[0] == "preview":
+            name = arg[1]
+            try:
+                embed = discord.Embed.from_dict(guild_dict[name]["embed"])
+                await ctx.channel.send(embed=embed)
+            except KeyError:
+                await ctx.channel.send("Something went wrong")
+        elif arg[0] == "list":
+            pass
+        elif arg[0] == "dev":
+            await ctx.channel.send(f"```json\n{guild_dict}\n```")
+        elif arg[0] == "react":
+            name = arg[1]
+            if arg[2] == "remove":
+                guild_dict[name].pop("react", None)
+            else:
+                if "react" not in guild_dict[name]:
+                    guild_dict[name]["react"] = {}
+                guild_dict[name]["react"][arg[2]] = arg[3]
+        with open("rules.toml", 'w', encoding="utf-8") as json_file:
+            toml.dump(self.rules_dict, json_file)
+        #print(self.rules_dict[str(ctx.guild.id)])
 
 def setup(bot):
     bot.add_cog(Rules(bot))

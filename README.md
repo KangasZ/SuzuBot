@@ -11,7 +11,11 @@
   "owner" : 99999999999
 }
 ```
+### Make an empty rules.toml:
 
+```
 venv/bin/activate
-
+screen -S discord
+Ctrl+a d
+```
 ..
